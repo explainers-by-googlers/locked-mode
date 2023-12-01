@@ -1,12 +1,12 @@
 <pre class='metadata'>
-Title: The TODO API
-Shortname: todo
+Title: Locked Mode API
+Shortname: locked-mode
 Level: None
 Status: w3c/UD
-Repository: explainers-by-googlers/todo-your-repo-name
-URL: https://explainers-by-googlers.github.io/todo-your-repo-name
-Editor: TODO: Your Name, Google https://google.com, TODO@google.com
-Abstract: TODO: A short description of your spec, one or two sentences.
+Repository: explainers-by-googlers/locked-mode
+URL: https://explainers-by-googlers.github.io/locked-mode
+Editor: Junguo W., Google https://google.com, jungoog@google.com
+Abstract: Enables a site or app to prompt the user to enter a locked-down fullscreen mode, where the user cannot exit this mode without notifying the site or app. Provides low-stakes testing and classroom management capabilities to web developers.
 Markup Shorthands: markdown yes, css no
 Complain About: accidental-2119 yes, missing-example-ids yes
 Assume Explicit For: yes
