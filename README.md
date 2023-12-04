@@ -26,7 +26,9 @@ feedback on the proposed solution. It has not been approved to ship in Chrome.
 
 In the education sector, there is a demand for applications to be able to serve students a low-stakes test, where the whole operating system is put in a restricted environment, preventing the student from using any other apps or OS features outside of the test itself. It is not currently possible for a web app to trigger this mode.
 
-We’d like to propose a new Web feature: Locked Mode API where a site or app prompts the user to enter a locked-down fullscreen mode, and the user cannot exit this mode without notifying the site or app. High-stakes testing is a non-goal to the API as it cannot stay secure against all adversaries, and it is up to each browser to implement their mitigations against exploits and abuses should they wish to pursue such use cases.
+We’d like to propose a new Web feature: Locked Mode API where a site or app prompts the user to enter a locked-down fullscreen mode, and the user cannot exit this mode without notifying the site or app.
+
+High-stakes testing is a non-goal to the API as it cannot stay secure against all adversaries, and it is up to each browser to implement their mitigations against exploits and abuses should they wish to pursue such use cases.
 
 
 ## Description of the API
