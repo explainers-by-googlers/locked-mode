@@ -41,6 +41,28 @@ The use cases for this API include:
 
 This API is most useful in managed environments[^1] (i.e. the device belongs to a school or another organization) where abuse is more preventable and the integrity of the API can be guaranteed more easily, e.g. by disabling Extensions, DevTools, bookmarklets and executing JavaScript in the URL bar. Unmanaged environments are out of scope of this explainer, but it’s important to note that this does not mean the API cannot work in unmanaged environments: it merely means it’s up to the individual implementation to decide whether or not to support unmanaged mode.
 
+```JavaScript
+// Used by sites/apps to make a request to enter Locked Mode for a given window/tab.
+//
+// Returns a Promise<void> that:
+// * Rejects on failure.
+// * Otherwise, enters Lock Mode and reloads the page (to prevent tampering).
+//
+// In the reloaded page, the site/app could query Locked Mode state
+// using `navigator.inLockedMode`.
+nagivator.requestLockedMode()
+
+// Exit Locked Mode for a given window/tab.
+//
+// Returns a Promise<void> that:
+//  * Resolves upon exiting locked mode successfully.
+//  * Rejects on failure.
+nagivator.exitLockedMode()
+
+// Boolean attribute indicating whether the window is in Locked Mode.
+nagivator.inLockedMode
+```
+
 When the API is called, the browser must:
 
 
