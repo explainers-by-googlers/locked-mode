@@ -48,7 +48,7 @@ When the API is called, the browser must:
 *   Decide whether Locked Mode is supported, then ask for user confirmation before entering Locked Mode.
 *   Lock the test site/app in fullscreen such that the user cannot switch to any other tabs.
 *   Prevent the user from opening a new tab/window while staying inside Locked Mode.
-*   Provide the user with a way to exit the mode (similar to the [hold-to-exit UI](https://www.google.com/url?q=https://developer.mozilla.org/en-US/docs/Web/API/Keyboard/lock&sa=D&source=docs&ust=1697769034559617&usg=AOvVaw0sLZu5BZOPjDp6Qlheq89s) for the keyboard lock API), unless management policy specifically disables this feature.
+*   Provide the user with a way to exit the mode (similar to the [hold-to-exit UI](https://developer.mozilla.org/en-US/docs/Web/API/Keyboard/lock) for the keyboard lock API), unless management policy specifically disables this feature.
 *   Provide a way for the site/app to get notified if Locked Mode is forcefully exited, e.g. via an event listener (see section below).
 
 Additionally, the browser should take other measures to prevent other parts of the system from interfering with the test environment, for example:
@@ -252,7 +252,7 @@ Similarly, browsers on other OSes can implement this API by communicating and co
      Per [minutes](https://docs.google.com/document/d/1brQFdsFsLtdhcMDmnyhqkpK5TTpDkAIsKVzYvkbs8Lw/edit) for standardizing managed user agent behavior at TPAC 2023, this is something we'd like to be able to propose in W3C standards going forward.
 
 [^2]:
-     When a Chrome extension with the correct permission calls `chrome.windows.update` and requests the "locked-fullscreen" state, the <code>[SetLockedFullscreenState](https://www.google.com/url?q=https://docs.google.com/document/d/1_DJ8vwxkyICFYk1tS2yAsSSUAxM2EdXY_MKz8GphMIE/edit&sa=D&source=docs&ust=1697515525035479&usg=AOvVaw1A1GABRC0SuvwCwLcmlV8b)</code> function is used. Currently it does not do anything on OSes other than ChromeOS.
+     When a Chrome extension with the correct permission calls `chrome.windows.update` and requests the "locked-fullscreen" state, the <code>[SetLockedFullscreenState](https://docs.google.com/document/d/1_DJ8vwxkyICFYk1tS2yAsSSUAxM2EdXY_MKz8GphMIE/edit#heading=h.z85wi9k9fc51)</code> function is used. Currently it does not do anything on OSes other than ChromeOS.
 
 [^3]:
      The Google Forms extension calls `chrome.windows.update` to set the window to a "locked-fullscreen" state, but the browser only allows this state to be entered from a allowlisted extension. Anybody can write an extension that calls this API, but it wouldn't do anything unless their extension had permission.
