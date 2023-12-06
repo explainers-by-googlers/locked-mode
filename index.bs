@@ -6,7 +6,7 @@ Status: w3c/UD
 Repository: explainers-by-googlers/locked-mode
 URL: https://explainers-by-googlers.github.io/locked-mode
 Editor: ChromeOS Web Apps APIs, Google https://google.com, cros-web-apps-apis-team@google.com
-Abstract: Enables a site or app to prompt the user to enter a locked-down fullscreen mode, where the user cannot exit this mode without notifying the site or app. Provides low-stakes testing and classroom management capabilities to web developers.
+Abstract: Enables a site or app to prompt the user to enter a locked-down fullscreen mode, where the user cannot exit this mode without notifying the site or app. Enables users to take low-stakes tests or focus on specific contents in a classroom setting.
 Markup Shorthands: markdown yes, css no
 Complain About: accidental-2119 yes, missing-example-ids yes
 Assume Explicit For: yes
