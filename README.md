@@ -11,14 +11,11 @@ feedback on the proposed solution. It has not been approved to ship in Chrome.
 
 - https://github.com/explainers-by-googlers/locked-mode/issues
 
-
 ## Table of Contents
 
 <!-- Update this table of contents by running `npx doctoc README.md` -->
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
-
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -26,52 +23,186 @@ feedback on the proposed solution. It has not been approved to ship in Chrome.
 
 In the education sector, there is a demand for applications to be able to serve students a low-stakes test, where the whole operating system is put in a restricted environment, preventing the student from using any other apps or OS features outside of the test itself. It is not currently possible for a web app to trigger this mode.
 
-We’d like to propose a new Web feature: Locked Mode API where a site or app prompts the user to enter a locked-down fullscreen mode, and the user cannot exit this mode without notifying the site or app.
-
-High-stakes testing is a non-goal to the API as it cannot stay secure against all adversaries, and it is up to each browser to implement their mitigations against exploits and abuses should they wish to pursue such use cases.
+We’d like to propose a new Web feature: Locked Mode API where a site prompts the user to enter a locked-down fullscreen mode, and the user cannot 1) use other apps and OS features or 2) exit this mode without notifying the site.
 
 
-## Description of the API
+## Goals
+
+Enables users to take low-stakes tests or focus on specific contents in a classroom setting.
+
+
+## Non-goals
+
+High-stakes testing is a non-goal to the API as it cannot stay secure against all adversaries.
+
+
+## User research
+
+
+## Use cases
 
 The use cases for this API include:
 
 
 
-*   A teacher may want students to be restricted from accessing other apps during a low-stakes assessment, e.g. in-class quiz. They can configure the assessment to enter locked mode, preventing the student from accessing other apps for its duration.
+*   A teacher may want students to be restricted from accessing other apps during a low-stakes assessment, e.g. in-class quiz, or focus on specific contents. They can configure the assessment to enter locked mode, preventing the student from accessing other apps for its duration.
 
 This API is most useful in managed environments[^1] (i.e. the device belongs to a school or another organization) where abuse is more preventable and the integrity of the API can be guaranteed more easily, e.g. by disabling Extensions, DevTools, bookmarklets and executing JavaScript in the URL bar. Unmanaged environments are out of scope of this explainer, but it’s important to note that this does not mean the API cannot work in unmanaged environments: it merely means it’s up to the individual implementation to decide whether or not to support unmanaged mode.
 
+
+## Potential solution
+
+
+### Description of the API
 ```JavaScript
 // Used by sites/apps to make a request to enter Locked Mode for a given window/tab.
+
 //
+
 // Returns a Promise<void> that:
+
 // * Rejects on failure.
+
 // * Otherwise, enters Lock Mode and reloads the page (to prevent tampering).
+
 //
-// In the reloaded page, the site/app could query Locked Mode state
+
+// In the reloaded page, the site could query Locked Mode state
+
 // using `navigator.inLockedMode`.
+
 nagivator.requestLockedMode()
 
+  
+
 // Exit Locked Mode for a given window/tab.
+
 //
+
 // Returns a Promise<void> that:
-//  * Resolves upon exiting locked mode successfully.
-//  * Rejects on failure.
+
+// * Resolves upon exiting locked mode successfully.  
+// * Rejects on failure.
+
 nagivator.exitLockedMode()
 
+  
+
 // Boolean attribute indicating whether the window is in Locked Mode.
+
 nagivator.inLockedMode
 ```
+
+### Usage of the API
+```JavaScript
+// The site requests the browser to enter Locked Mode.
+
+let enter_result = await nagivator.requestLockedMode()
+
+  
+
+// On failure, the promise will reject.
+
+  
+
+// On success, the browser will reload the page after entering Locked Mode, which resets the JavaScript context.
+
+//
+
+// On loading, the site can then check if the user is already in Locked Mode.
+
+let in_locked_mode = nagivator.inLockedMode
+
+  
+
+// When done, the site requests the browser to exit Locked Mode.
+
+let exit_result = await nagivator.exitLockedMode()
+```
+
+### Existing platform solutions
+
+
+#### ChromeOS
+
+Today there is a “Locked Mode” feature as part of Google for Education, limited to managed ChromeOS devices and Google Forms. Forms locks down devices this way by calling a Chrome extension API[^2] through a broker extension installed on managed devices, but other sites/apps cannot take advantage of this mechanism[^3].
+
+Alternatively, ChromeOS can be configured to boot in [kiosk mode](https://support.google.com/chrome/a/answer/3273084?hl=en#zippy=%2Coption-school-sets-up-chromebook-as-a-single-app-kiosk-running-the-exam-app:~:text=Create%20and%20deploy%20Chrome%20kiosk%20apps) where a single site is locked into fullscreen without any other system UI.
+
+ChromeOS does not yet allow third-party secure testing in a regular user session, or with a user switch without requiring reboot.
+
+
+#### Apple (macOS/iOS)
+
+Apple’s assessment mode is a locked mode for macOS/iOS suitable for running secure tests and is available on both managed and unmanaged devices. Approved developers can use the [Automatic Assessment Configuration](https://developer.apple.com/documentation/automaticassessmentconfiguration) API in their apps to put the device into assessment mode.
+
+The Automatic Assessment Configuration API is only available to applications that have its [entitlement](https://developer.apple.com/documentation/bundleresources/entitlements). Getting the entitlement requires Apple’s approval.
+
+The Automatic Assessment Configuration prevents access to desktop elements in macOS/iOS like:
+
+
+
+*   The Dock
+*   The Application Menu Bar
+*   Mission Control (task switching)
+*   Notification Center
+*   Spaces other than the current one
+*   Other apps, except those that the developer selectively allows
+
+Additionally, it:
+
+
+
+*   Prevents screen recording and screen capture
+*   Disables Siri (voice commands)
+*   Stops media playing
+*   Allows network access for only the test provider’s app
+*   Disables Handoff (cross-device desktop workspace)
+*   Clears the clipboard buffer when starting and stopping the session
+
+
+#### Windows
+
+Windows 10/11 provides a UWP [Take a Test](https://learn.microsoft.com/en-us/windows/uwp/apps-for-education/take-a-test-api) app on managed devices using [Secure Assessment mode](https://learn.microsoft.com/en-us/education/windows/take-tests-in-windows), and on unmanaged devices using [kiosk mode](https://learn.microsoft.com/en-us/education/windows/edu-take-a-test-kiosk-mode?tabs=win). Take a Test is a specialized web browser that navigates to a predefined test site. This browser implements the [Smarter Balanced Assessment Consortium](http://www.smarterbalanced.org/) (SBAC) [specifications](https://www.smarterapp.org/documents/SecureBrowserRequirementsSpecifications_0-3.pdf) that exposes a JavaScript API to allow the test site to lock down the computer. When locked down using Secure Assessment mode, users are unable to:
+
+
+
+*   Print, use screen capture, or text suggestions (unless allowlisted),
+*   Access other applications,
+*   Change system settings, such as display extension, notifications, updates,
+*   Access Cortana (voice commands),
+*   Access content copied to the clipboard.
+
+
+#### Other solutions
+
+Some testing providers also distribute their own secure testing browsers. However, Take a Test app is explicitly mentioned as an equivalent substitute (e.g. [Cambium](https://guides.cambiumast.com/Supported_Browsers/California/Content/Portal_OSs/Sec_Browsers/Windows_10_Take_a_Test.htm), [Pearson [page 4]](https://tn.mypearsonsupport.com/resources/schoolnet/Secure%20Tester%20Installation%20and%20User%20Guide.pdf)).
+
+
+### Implementation in browsers
+
+
+#### Chrome-on-ChromeOS
+
+For Chrome-on-ChromeOS, there is an existing extension API which locks the device to fullscreen for testing, which makes it possible for the Web API implementation to plug into the same architecture.
+
+
+#### Browsers on other OSes
+
+Similarly, browsers on other OSes can implement this API by communicating and coordinating with the operating system. Theoretically, browsers vendors could leverage administrator/sudo privileges and lower-level system APIs on Windows/macOS to lock down the device as best as they could, but it is not a guarantee that they will be able to properly implement Locked Mode without support from Microsoft/Apple, where they could provide an OS-wide API that can properly lock down the device for assessment (this API already exists in macOS as mentioned in a previous section). In practice, both Windows and macOS would need to authorize uses of this OS-wide API for browsers/apps other than their own, and this might create some friction for third party developers hoping to implement the Locked Mode API. To ease the transition, existing specialized “secure testing” browsers such as Microsoft Take-a-Test, Cambium and Pearson could expose this new W3C standard in addition to SBAC which they currently use.
+
+
+## Detailed design discussion
 
 When the API is called, the browser must:
 
 
 
 *   Decide whether Locked Mode is supported, then ask for user confirmation before entering Locked Mode.
-*   Lock the test site/app in fullscreen such that the user cannot switch to any other tabs.
+*   Lock the test site in fullscreen such that the user cannot switch to any other tabs.
 *   Prevent the user from opening a new tab/window while staying inside Locked Mode.
 *   Provide the user with a way to exit the mode (similar to the [hold-to-exit UI](https://developer.mozilla.org/en-US/docs/Web/API/Keyboard/lock) for the keyboard lock API), unless management policy specifically disables this feature.
-*   Provide a way for the site/app to get notified if Locked Mode is forcefully exited, e.g. via an event listener (see section below).
+*   Provide a way for the site to get notified if Locked Mode is forcefully exited, e.g. via an event listener (see section below).
 
 Additionally, the browser should take other measures to prevent other parts of the system from interfering with the test environment, for example:
 
@@ -79,13 +210,13 @@ Additionally, the browser should take other measures to prevent other parts of t
 
 *   Discard other tabs (i.e. evict their state from memory so they can’t communicate/play audio in the background) and disable non-allowed extensions.
 *   Shut down any running service workers for other origins and prevent them from starting up again for the duration of Locked Mode.
-*   Prevent tampering against the test site/app by reloading after entering Locked Mode, e.g. via DevTools, extensions, bookmarklets and URL bar JavaScript execution.
+*   Prevent tampering against the test site by reloading after entering Locked Mode, e.g. via DevTools, extensions, bookmarklets and URL bar JavaScript execution.
 
 Furthermore, the browser should communicate to the operating system to enter what it considers "Locked Mode". What "Locked mode" means will vary per operating system, but in general it should:
 
 
 
-*   Lock the test site/app fullscreen such that the user cannot switch to any other windows or access any unauthorized desktop elements.
+*   Lock the test site fullscreen such that the user cannot switch to any other windows or access any unauthorized desktop elements.
 *   Disable all non-allowed keyboard shortcuts.
 *   Close other running applications, preventing them from communicating/playing audio in the background.
 *   Clear the clipboard buffer upon entering/exiting the Locked Mode.
@@ -93,12 +224,12 @@ Furthermore, the browser should communicate to the operating system to enter wha
 
 #### Event listener
 
-The API must provide a way for the site/app to get notified if Locked Mode is forcefully exited. We propose adding a `Navigator: lockedmodechange` event, that fires whenever Locked mode is entered or exited. It is worth noting that there are situations where it is impossible to detect forced exits by the user, e.g. when they power cycle the device. This event should fire on detecting locked mode changes on a best-effort basis, e.g. when the API is called or when the user exits via the provided UI, and the fact that this event hasn’t been fired alone should not serve as a guarantee that the test session hasn’t been interrupted.
+The API must provide a way for the site to get notified if Locked Mode is forcefully exited. We propose adding a `Navigator: lockedmodechange` event, that fires whenever Locked mode is entered or exited. It is worth noting that there are situations where it is impossible to detect forced exits by the user, e.g. when they power cycle the device. This event should fire on detecting locked mode changes on a best-effort basis, e.g. when the API is called or when the user exits via the provided UI, and the fact that this event hasn’t been fired alone should not serve as a guarantee that the test session hasn’t been interrupted.
 
 
 ### Threat model
 
-This API has unusual security properties because in addition to the primary security concern of protecting the user from the remote site, Locked Mode also has to guard against abuse by the user (the student) against the test site/app. Here we enumerate various ways that this could occur:
+This API has unusual security properties because in addition to the primary security concern of protecting the user from the remote site, Locked Mode also has to guard against abuse by the user (the student) against the test site. Here we enumerate various ways that this could occur:
 
 
 
@@ -112,7 +243,7 @@ While the proposed API design attempts to mitigate some of the aforementioned at
 
 
 1. the API implementation itself in the system is correct and complete,
-2. the user is not able to tamper with the API at runtime, e.g. by executing their own JavaScript code or installing extensions in the context of the test site/app.
+2. the user is not able to tamper with the API at runtime, e.g. by executing their own JavaScript code or installing extensions in the context of the test site.
 
 
 #### Considerations for developers
@@ -122,10 +253,10 @@ To ensure the API works as intended, the developers / test providers could consi
 
 
 *   Keep track of the number of times the student has launched the quiz.
-*   Prevent users from executing their own JavaScript code (e.g. via DevTools, bookmarklets, URL bar) or installing extensions in the context of the test site/app or installing extensions.
+*   Prevent users from executing their own JavaScript code (e.g. via DevTools, bookmarklets, URL bar) or installing extensions in the context of the test site or installing extensions.
 
 
-### Alternatives considered
+## Alternatives considered
 
 
 #### Implementing the [Smarter Balanced Assessment Consortium](http://www.smarterbalanced.org/) (SBAC)’s Secure Browser [specifications](https://www.smarterapp.org/documents/SecureBrowserRequirementsSpecifications_0-3.pdf)
@@ -195,77 +326,23 @@ Cons:
 *   fullscreenchange is fired on `window.navigator.document` whereas the proposed API is fired on `window.navigator`.
 
 
-### Existing platform solutions
+## Stakeholders feedback / opposition
 
 
-#### ChromeOS
+### Web developers
 
-Today there is a “Locked Mode” feature as part of Google for Education, limited to managed ChromeOS devices and Google Forms. Forms locks down devices this way by calling a Chrome extension API[^2] through a broker extension installed on managed devices, but other sites/apps cannot take advantage of this mechanism[^3].
-
-Alternatively, ChromeOS can be configured to boot in [kiosk mode](https://support.google.com/chrome/a/answer/3273084?hl=en#zippy=%2Coption-school-sets-up-chromebook-as-a-single-app-kiosk-running-the-exam-app:~:text=Create%20and%20deploy%20Chrome%20kiosk%20apps) where a single site or app is locked into fullscreen without any other system UI.
-
-ChromeOS does not yet allow third-party secure testing in a regular user session, or with a user switch without requiring reboot.
+**Positive**: We are working with partners in the Edu space that use a similar functionality provided by the OS.
 
 
-#### Apple (macOS/iOS)
+## References & acknowledgements
 
-Apple’s assessment mode is a locked mode for macOS/iOS suitable for running secure tests and is available on both managed and unmanaged devices. Approved developers can use the [Automatic Assessment Configuration](https://developer.apple.com/documentation/automaticassessmentconfiguration) API in their apps to put the device into assessment mode.
-
-The Automatic Assessment Configuration API is only available to applications that have its [entitlement](https://developer.apple.com/documentation/bundleresources/entitlements). Getting the entitlement requires Apple’s approval.
-
-The Automatic Assessment Configuration prevents access to desktop elements in macOS/iOS like:
+Many thanks for valuable feedback and advice from:
 
 
 
-*   The Dock
-*   The Application Menu Bar
-*   Mission Control (task switching)
-*   Notification Center
-*   Spaces other than the current one
-*   Other apps, except those that the developer selectively allows
-
-Additionally, it:
-
-
-
-*   Prevents screen recording and screen capture
-*   Disables Siri (voice commands)
-*   Stops media playing
-*   Allows network access for only the test provider’s app
-*   Disables Handoff (cross-device desktop workspace)
-*   Clears the clipboard buffer when starting and stopping the session
-
-
-#### Windows
-
-Windows 10/11 provides a UWP [Take a Test](https://learn.microsoft.com/en-us/windows/uwp/apps-for-education/take-a-test-api) app on managed devices using [Secure Assessment mode](https://learn.microsoft.com/en-us/education/windows/take-tests-in-windows), and on unmanaged devices using [kiosk mode](https://learn.microsoft.com/en-us/education/windows/edu-take-a-test-kiosk-mode?tabs=win). Take a Test is a specialized web browser that navigates to a predefined test site/app. This browser implements the [Smarter Balanced Assessment Consortium](http://www.smarterbalanced.org/) (SBAC) [specifications](https://www.smarterapp.org/documents/SecureBrowserRequirementsSpecifications_0-3.pdf) that exposes a JavaScript API to allow the test site/app to lock down the computer. When locked down using Secure Assessment mode, users are unable to:
-
-
-
-*   Print, use screen capture, or text suggestions (unless allowlisted),
-*   Access other applications,
-*   Change system settings, such as display extension, notifications, updates,
-*   Access Cortana (voice commands),
-*   Access content copied to the clipboard.
-
-
-#### Other solutions
-
-Some testing providers also distribute their own secure testing browsers. However, Take a Test app is explicitly mentioned as an equivalent substitute (e.g. [Cambium](https://guides.cambiumast.com/Supported_Browsers/California/Content/Portal_OSs/Sec_Browsers/Windows_10_Take_a_Test.htm), [Pearson [page 4]](https://tn.mypearsonsupport.com/resources/schoolnet/Secure%20Tester%20Installation%20and%20User%20Guide.pdf)).
-
-
-### Implementation in browsers
-
-
-#### Chrome-on-ChromeOS
-
-For Chrome-on-ChromeOS, there is an existing extension API which locks the device to fullscreen for testing, which makes it possible for the Web API implementation to plug into the same architecture.
-
-
-#### Browsers on other OSes
-
-Similarly, browsers on other OSes can implement this API by communicating and coordinating with the operating system. Theoretically, browsers vendors could leverage administrator/sudo privileges and lower-level system APIs on Windows/macOS to lock down the device as best as they could, but it is not a guarantee that they will be able to properly implement Locked Mode without support from Microsoft/Apple, where they could provide an OS-wide API that can properly lock down the device for assessment (this API already exists in macOS as mentioned in a previous section). In practice, both Windows and macOS would need to authorize uses of this OS-wide API for browsers/apps other than their own, and this might create some friction for third party developers hoping to implement the Locked Mode API. To ease the transition, existing specialized “secure testing” browsers such as Microsoft Take-a-Test, Cambium and Pearson could expose this new W3C standard in addition to SBAC which they currently use.
-
+*   Giovanni Ortuno
+*   Jiewei Qian
+*   Matt Giuca
 
 <!-- Footnotes themselves at the bottom. -->
 ## Notes
