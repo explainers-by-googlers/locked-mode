@@ -1,6 +1,6 @@
 # Explainer for Locked Mode API
 
-This proposal is an early design sketch by ChromeOS Web Apps APIs to describe the problem below and solicit
+This proposal is an early design sketch by the ChromeOS Web Apps APIs Team to describe the problem below and solicit
 feedback on the proposed solution. It has not been approved to ship in Chrome.
 
 ## Proponents
