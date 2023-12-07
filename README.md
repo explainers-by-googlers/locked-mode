@@ -5,7 +5,7 @@ feedback on the proposed solution. It has not been approved to ship in Chrome.
 
 ## Proponents
 
-- ChromeOS Web Apps APIs
+- ChromeOS Web Apps APIs Team
 
 ## Participate
 
