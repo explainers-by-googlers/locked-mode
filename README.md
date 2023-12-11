@@ -242,7 +242,7 @@ Pros:
 
 Cons:
 
-*   fullscreenchange is fired on `window.navigator.document` whereas the proposed API is fired on `window.navigator`.
+*   fullscreenchange is fired on `window.document` whereas the proposed API is fired on `window.navigator`.
 
 
 ## Stakeholders feedback / opposition
