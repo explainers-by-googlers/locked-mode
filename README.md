@@ -1,3 +1,4 @@
+
 # Explainer for Locked Mode API
 
 This proposal is an early design sketch by the ChromeOS Web Apps APIs Team to describe the problem below and solicit
@@ -172,7 +173,7 @@ Furthermore, the browser should communicate to the operating system to enter wha
 
 #### Event listener
 
-The API must provide a way for the site to get notified if Locked Mode is forcefully exited. We propose adding a `Navigator: lockedmodechange` event, that fires whenever Locked mode is entered or exited. It is worth noting that there are situations where it is impossible to detect forced exits by the user, e.g. when they power cycle the device. This event should fire on detecting locked mode changes on a best-effort basis, e.g. when the API is called or when the user exits via the provided UI, and the fact that this event hasn’t been fired alone should not serve as a guarantee that the test session hasn’t been interrupted.
+The API must provide a way for the site to get notified if Locked Mode is forcefully exited. We propose adding a `Window: lockedmodechange` event, that fires whenever Locked mode is entered or exited. It is worth noting that there are situations where it is impossible to detect forced exits by the user, e.g. when they power cycle the device. This event should fire on detecting locked mode changes on a best-effort basis, e.g. when the API is called or when the user exits via the provided UI, and the fact that this event hasn’t been fired alone should not serve as a guarantee that the test session hasn’t been interrupted.
 
 ### Threat model
 
@@ -242,7 +243,7 @@ Pros:
 
 Cons:
 
-*   fullscreenchange is fired on `window.document` whereas the proposed API is fired on `window.navigator`.
+*   fullscreenchange is fired on `window.document` whereas the proposed API is fired on `window.navigator`, and `window` is more appropriate for our use case.
 
 
 ## Stakeholders feedback / opposition
