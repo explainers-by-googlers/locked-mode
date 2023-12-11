@@ -77,17 +77,22 @@ nagivator.inLockedMode
 ### Usage of the API
 ```JavaScript
 // The site requests the browser to enter Locked Mode.
-let enter_result = await nagivator.requestLockedMode()
+let enter_result = await nagivator.requestLockedMode();
 
 // On failure, the promise will reject.
 
 // On success, the browser will reload the page after entering Locked Mode, which resets the JavaScript context.
 //
 // On loading, the site can then check if the user is already in Locked Mode.
-let in_locked_mode = nagivator.inLockedMode
+let in_locked_mode = nagivator.inLockedMode;
+
+// The site monitors changes to Locked Mode status and reacts accordingly.
+window.addEventListener("lockedmodechange", (e)  =>  {
+	// Do something
+});
 
 // When done, the site requests the browser to exit Locked Mode.
-let exit_result = await nagivator.exitLockedMode()
+let exit_result = await nagivator.exitLockedMode();
 ```
 
 ### Existing platform solutions
