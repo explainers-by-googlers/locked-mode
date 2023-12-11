@@ -40,7 +40,7 @@ High-stakes testing is a non-goal for the API as it cannot stay secure against a
 The use cases for this API include:
 
 *   A teacher may want students to be restricted from accessing other apps during a low-stakes assessment, e.g. in-class quiz, or focus on specific contents. They can configure the assessment to enter locked mode, preventing the student from accessing other apps for its duration.
-    *   The site may want to react to the user entering/exiting Locked Mode on their device, and update the content being served accordingly.
+    *   The site may want to react to the user entering/exiting Locked Mode on their device, and update the content being served accordingly, e.g. via an event listener.
 
 This API is most useful in managed environments[^1] (i.e. the device belongs to a school or another organization) where abuse is more preventable and the integrity of the API can be guaranteed more easily, e.g. by disabling Extensions, DevTools, bookmarklets and executing JavaScript in the URL bar. Unmanaged environments are out of scope of this explainer, but it’s important to note that this does not mean the API cannot work in unmanaged environments: it merely means it’s up to the individual implementation to decide whether or not to support unmanaged mode.
 
