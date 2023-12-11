@@ -59,7 +59,6 @@ This API is most useful in managed environments[^1] (i.e. the device belongs to 
 //
 // In the reloaded page, the site could query Locked Mode state
 // using `navigator.inLockedMode`.
-
 nagivator.requestLockedMode()
 
 // Exit Locked Mode for a given window/tab.
