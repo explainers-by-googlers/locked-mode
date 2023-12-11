@@ -212,7 +212,7 @@ Pros:
 Cons:
 
 *   The API uses the `browser` namespace which is inconsistent with the rest of the web platform. In addition, the relevant methods are in the `browser.security` namespace which would be inappropriate for a W3C standard.
-*   Defines a wide variety of (albeit optional) methods that have security and privacy characteristics that might not be appropriate for the Web in general e.g. e.g. `getProcessList()`, `getIPAddressList()`.
+*   Defines a wide variety of (albeit optional) methods that have security and privacy characteristics that might not be appropriate for the Web in general e.g. `getProcessList()`, `getIPAddressList()`.
 *   We could consider standardizing a subset of SBAC specs / aligning method call names to it (e.g. `enableLockDown(boolean)`), but the benefits of doing so are not sufficient to outweigh the fact it wouldn’t provide an optimal shape to our proposed API. It is also possible to create a polyfill to provide compatibility to existing test sites/apps instead.
 
 #### Having a low-level "just lock the app to fullscreen" API and separate APIs to lock out other functionalities
