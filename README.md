@@ -238,6 +238,7 @@ Cons:
 *   Does not allow developers to detect the Locked Mode feature by checking the existence of a separate API.
 *   Locked Mode is a much more involved feature than fullscreen mode because it affects the whole session. They also serve very different purposes, and thus it makes more sense to separate them out.
 *   Allows requesting Locked Mode for any HTML element, which is not currently a desired feature as we only want to be able to put the whole document into Locked Mode; adds complexity to design considerations, e.g. how do we handle putting a radio button into Locked Mode (as it isn’t expected to be a valid use case of the API)?
+*   Will likely prevent the use case of calling requestFullscreen inside an already locked window.
 
 #### Extending the <code>[Document: fullscreenchange](https://developer.mozilla.org/en-US/docs/Web/API/Document/fullscreenchange_event)</code> event so that it fires whenever Locked Mode is entered or exited
 
