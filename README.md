@@ -1,8 +1,7 @@
 
 # Explainer for Locked Mode API
 
-This proposal is an early design sketch by the ChromeOS Web Apps APIs Team to describe the problem below and solicit
-feedback on the proposed solution. It has not been approved to ship in Chrome.
+This proposal is an early design sketch by the ChromeOS Web Apps APIs Team to describe the problem below and solicit feedback on the proposed solution. It has not been approved to ship in Chrome.
 
 ## Proponents
 
@@ -222,6 +221,8 @@ Cons:
 *   Places responsibility for plugging every hole onto the app developer, rather than the browser/OS manufacturer. Since every OS would have different features that need to be disabled, this would require the app developer to consider the individual features of every OS, and so would not be able to guarantee the lockdown of the OS features in a portable way.
 
 #### Extending the <code>[requestFullScreen](https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen)</code> API
+
+We are still exploring the API shape and interaction with the fullscreen API.
 
 Pros:
 
