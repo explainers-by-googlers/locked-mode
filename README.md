@@ -149,7 +149,7 @@ Similarly, browsers on other OSes can implement this API by communicating and co
 
 When the API is called, the browser must:
 
-*   Decide whether Locked Mode is supported, then ask for user confirmation before entering Locked Mode.
+*   Decide whether Locked Mode is supported and allowed in the calling context, then ask for user confirmation before entering Locked Mode.
 *   Lock the test site in fullscreen such that the user cannot switch to any other tabs.
 *   Prevent the user from opening a new tab/window while staying inside Locked Mode.
 *   Provide the user with a way to exit the mode (similar to the [hold-to-exit UI](https://developer.mozilla.org/en-US/docs/Web/API/Keyboard/lock) for the keyboard lock API), unless management policy specifically disables this feature.
