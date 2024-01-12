@@ -54,33 +54,33 @@ This API is most useful in managed environments[^1] (i.e. the device belongs to 
 // Returns a Promise<void> that:
 // * Rejects on failure.
 // * Otherwise, enters Lock Mode and reloads the page (to prevent tampering).
-nagivator.fullscreenLock.request();
+nagivator.lockedMode.request();
 
 // Exit Locked Mode for a given window/tab.
 //
 // Returns a Promise<void> that:
 //  * Resolves upon exiting Locked Mode successfully.
 //  * Rejects on failure.
-nagivator.fullscreenLock.exit();
+nagivator.lockedMode.exit();
 
 // Boolean attribute indicating whether the window is in Locked Mode.
-nagivator.fullscreenLock.activated;
+nagivator.lockedMode.activated;
 ```
 
 ### Usage of the API
 ```JavaScript
 // The site requests the browser to enter Locked Mode.
-let enterResult = await nagivator.fullscreenLock.request();
+let enterResult = await nagivator.lockedMode.request();
 
 // On failure, the promise will reject.
 
 // On success, the browser will reload the page after entering Locked Mode, which resets the JavaScript context.
 //
 // On loading, the site can then check if the user is already in Locked Mode.
-let inLockedMode = nagivator.fullscreenLock.activated;
+let inLockedMode = nagivator.lockedMode.activated;
 
 // The site monitors changes to Locked Mode status and reacts accordingly.
-navigator.fullscreenLock.addEventListener("change", (e) => {
+navigator.lockedMode.addEventListener("change", (e) => {
   // Do something
 });
 
@@ -171,7 +171,7 @@ Furthermore, the browser should communicate to the operating system to enter wha
 
 #### Event listener
 
-The API must provide a way for the site to get notified if Locked Mode is forcefully exited. We propose adding a `fullscreenLock: change` event, that fires whenever Locked Mode is entered or exited. It is worth noting that there are situations where it is impossible to detect forced exits by the user, e.g. when they power cycle the device. This event should fire on detecting Locked Mode changes on a best-effort basis, e.g. when the API is called or when the user exits via the provided UI, and the fact that this event hasn’t been fired alone should not serve as a guarantee that the test session hasn’t been interrupted.
+The API must provide a way for the site to get notified if Locked Mode is forcefully exited. We propose adding a `lockedMode: change` event, that fires whenever Locked Mode is entered or exited. It is worth noting that there are situations where it is impossible to detect forced exits by the user, e.g. when they power cycle the device. This event should fire on detecting Locked Mode changes on a best-effort basis, e.g. when the API is called or when the user exits via the provided UI, and the fact that this event hasn’t been fired alone should not serve as a guarantee that the test session hasn’t been interrupted.
 
 ### Threat model
 
@@ -179,8 +179,8 @@ This API has unusual security properties because in addition to the primary secu
 
 1. The user infiltrates data to the test app (e.g. by preparing notes on the clipboard then pasting them in; having a call in the background that speaks the answers).
 2. The user exfiltrates data from the test app (e.g. by copying quiz content to the clipboard before exiting Locked Mode; sharing contents of the screen over the internet via screen capture)
-3. The user escapes the mode during the test without alerting the test app (e.g. by tampering with event handlers and calling `navigator.fullscreenLock.exit()` using DevTools/extensions/bookmarklets/URL bar JavaScript execution; dumping contents of the RAM and then rebooting to an unrestricted operating environment before restoring RAM to its previous state when the device was in Locked Mode).
-4. The user tries to convince the app that it is in Locked Mode when in fact it is not (e.g. by overwriting the `navigator.fullscreenLock.request()` method with their own that simply returns true at runtime).
+3. The user escapes the mode during the test without alerting the test app (e.g. by tampering with event handlers and calling `navigator.lockedMode.exit()` using DevTools/extensions/bookmarklets/URL bar JavaScript execution; dumping contents of the RAM and then rebooting to an unrestricted operating environment before restoring RAM to its previous state when the device was in Locked Mode).
+4. The user tries to convince the app that it is in Locked Mode when in fact it is not (e.g. by overwriting the `navigator.lockedMode.request()` method with their own that simply returns true at runtime).
 
 While the proposed API design attempts to mitigate some of the aforementioned attacks (e.g. prevent pasting in notes / pasting out quiz content by clearing the clipboard, prevent unauthorized communications by closing background apps), it is important to note that it is very difficult, if not impossible, to mitigate some of these attacks (e.g. dumping and restoring RAM contents, tampering with the API at a system level or at runtime), especially from the standpoint of the API alone. Considerations against these types of attacks are out of scope of this API, but generally, for the API to work as intended it is a good idea to make sure:
 
@@ -228,12 +228,14 @@ We are still exploring the API shape and interaction with the fullscreen API.
 Pros:
 
 *   We are extending an existing Web standard.
+*   Locked Mode and regular fullscreen mode are conceptually similar.
+*   Allows requesting Locked Mode for any HTML element, which is potentially a desired feature for test site developers.
 
 Cons:
 
 *   Does not allow developers to detect the Locked Mode feature by checking the existence of a separate API.
 *   Locked Mode is a much more involved feature than fullscreen mode because it affects the whole session. They also serve very different purposes, and thus it makes more sense to separate them out.
-*   Allows requesting Locked Mode for any HTML element, which is not currently a desired feature as we only want to be able to put the whole document into Locked Mode.
+*  Locked Mode is different from fullscreen mode in that they serve different purposes, and that the prior is a much more involved feature where it affects the whole session. The operating system may also decide to include some system UI as a part of its Locked Mode implementation, thus this feature cannot be simply described as “locked fullscreen”.
 *   Adds complexity to design considerations, e.g. how do we handle putting a radio button into Locked Mode (as it isn’t expected to be a valid use case of the API)?  What if we wanted to make a regular `requestFullscreen` call inside a locked window?
 
 #### Extending the <code>[Document: fullscreenchange](https://developer.mozilla.org/en-US/docs/Web/API/Document/fullscreenchange_event)</code> event so that it fires whenever Locked Mode is entered or exited
@@ -244,7 +246,7 @@ Pros:
 
 Cons:
 
-*   `fullscreenchange` is fired on window.document, whereas the proposed API is fired on `window.navigator.fullscreenLock`.
+*   `fullscreenchange` is fired on window.document, whereas the proposed API is fired on `window.navigator.lockedMode`.
 
 
 ## Stakeholders feedback / opposition
@@ -327,33 +329,33 @@ This API is most useful in managed environments[^1] (i.e. the device belongs to 
 // Returns a Promise<void> that:
 // * Rejects on failure.
 // * Otherwise, enters Lock Mode and reloads the page (to prevent tampering).
-nagivator.fullscreenLock.request();
+nagivator.lockedMode.request();
 
 // Exit Locked Mode for a given window/tab.
 //
 // Returns a Promise<void> that:
 //  * Resolves upon exiting Locked Mode successfully.
 //  * Rejects on failure.
-nagivator.fullscreenLock.exit();
+nagivator.lockedMode.exit();
 
 // Boolean attribute indicating whether the window is in Locked Mode.
-nagivator.fullscreenLock.activated;
+nagivator.lockedMode.activated;
 ```
 
 ### Usage of the API
 ```JavaScript
 // The site requests the browser to enter Locked Mode.
-let enterResult = await nagivator.fullscreenLock.request();
+let enterResult = await nagivator.lockedMode.request();
 
 // On failure, the promise will reject.
 
 // On success, the browser will reload the page after entering Locked Mode, which resets the JavaScript context.
 //
 // On loading, the site can then check if the user is already in Locked Mode.
-let inLockedMode = nagivator.fullscreenLock.activated;
+let inLockedMode = nagivator.lockedMode.activated;
 
 // The site monitors changes to Locked Mode status and reacts accordingly.
-navigator.fullscreenLock.addEventListener("change", (e) => {
+navigator.lockedMode.addEventListener("change", (e) => {
   // Do something
 });
 
@@ -444,7 +446,7 @@ Furthermore, the browser should communicate to the operating system to enter wha
 
 #### Event listener
 
-The API must provide a way for the site to get notified if Locked Mode is forcefully exited. We propose adding a `fullscreenLock: change` event, that fires whenever Locked Mode is entered or exited. It is worth noting that there are situations where it is impossible to detect forced exits by the user, e.g. when they power cycle the device. This event should fire on detecting Locked Mode changes on a best-effort basis, e.g. when the API is called or when the user exits via the provided UI, and the fact that this event hasn’t been fired alone should not serve as a guarantee that the test session hasn’t been interrupted.
+The API must provide a way for the site to get notified if Locked Mode is forcefully exited. We propose adding a `lockedMode: change` event, that fires whenever Locked Mode is entered or exited. It is worth noting that there are situations where it is impossible to detect forced exits by the user, e.g. when they power cycle the device. This event should fire on detecting Locked Mode changes on a best-effort basis, e.g. when the API is called or when the user exits via the provided UI, and the fact that this event hasn’t been fired alone should not serve as a guarantee that the test session hasn’t been interrupted.
 
 ### Threat model
 
@@ -452,8 +454,8 @@ This API has unusual security properties because in addition to the primary secu
 
 1. The user infiltrates data to the test app (e.g. by preparing notes on the clipboard then pasting them in; having a call in the background that speaks the answers).
 2. The user exfiltrates data from the test app (e.g. by copying quiz content to the clipboard before exiting Locked Mode; sharing contents of the screen over the internet via screen capture)
-3. The user escapes the mode during the test without alerting the test app (e.g. by tampering with event handlers and calling `navigator.fullscreenLock.exit()` using DevTools/extensions/bookmarklets/URL bar JavaScript execution; dumping contents of the RAM and then rebooting to an unrestricted operating environment before restoring RAM to its previous state when the device was in Locked Mode).
-4. The user tries to convince the app that it is in Locked Mode when in fact it is not (e.g. by overwriting the `navigator.fullscreenLock.request()` method with their own that simply returns true at runtime).
+3. The user escapes the mode during the test without alerting the test app (e.g. by tampering with event handlers and calling `navigator.lockedMode.exit()` using DevTools/extensions/bookmarklets/URL bar JavaScript execution; dumping contents of the RAM and then rebooting to an unrestricted operating environment before restoring RAM to its previous state when the device was in Locked Mode).
+4. The user tries to convince the app that it is in Locked Mode when in fact it is not (e.g. by overwriting the `navigator.lockedMode.request()` method with their own that simply returns true at runtime).
 
 While the proposed API design attempts to mitigate some of the aforementioned attacks (e.g. prevent pasting in notes / pasting out quiz content by clearing the clipboard, prevent unauthorized communications by closing background apps), it is important to note that it is very difficult, if not impossible, to mitigate some of these attacks (e.g. dumping and restoring RAM contents, tampering with the API at a system level or at runtime), especially from the standpoint of the API alone. Considerations against these types of attacks are out of scope of this API, but generally, for the API to work as intended it is a good idea to make sure:
 
@@ -522,7 +524,7 @@ Pros:
 
 Cons:
 
-*   `fullscreenchange` is fired on window.document, whereas the proposed API is fired on `window.navigator.fullscreenLock`.
+*   `fullscreenchange` is fired on window.document, whereas the proposed API is fired on `window.navigator.lockedMode`.
 
 
 ## Stakeholders feedback / opposition
