@@ -10,7 +10,7 @@ This proposal is an early design sketch by the ChromeOS Web Apps APIs Team to de
 
 - https://github.com/explainers-by-googlers/locked-mode/issues
 
-## Table of Contents
+## Table of contents
 
 <!-- Update this table of contents by running `npx doctoc README.md` -->
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
