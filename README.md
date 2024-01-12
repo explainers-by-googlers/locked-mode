@@ -83,7 +83,7 @@ navigator.lockedMode.addEventListener("change", (e) => {
 });
 
 // When done, the site requests the browser to exit Locked Mode.
-let exitResult = await nagivator.fullscrenLock.exit();
+let exitResult = await nagivator.lockedMode.exit();
 ```
 
 ### Existing platform solutions
