@@ -190,7 +190,7 @@ While the proposed API design attempts to mitigate some of the aforementioned at
 To ensure the API works as intended, the developers / test providers could consider the following:
 
 *   Keep track of the number of times the student has launched the quiz.
-*   Prevent users from executing their own JavaScript code (e.g. via DevTools, bookmarklets, URL bar) or installing extensions in the context of the test site or installing extensions.
+*   Prevent users from executing their own JavaScript code (e.g. via DevTools, bookmarklets, URL bar) or installing extensions in the context of the test site.
 
 ## Alternatives considered
 
